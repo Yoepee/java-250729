@@ -17,6 +17,13 @@ public class WiseSayingService {
         return repository.getWiseSayings().stream().sorted((a, b) -> b.getId() - a.getId()).toList();
     }
 
+    public List<WiseSaying> getSortedWiseSayingsByKeyword(String keywordType, String keyword) {
+        return repository.getWiseSayings().stream()
+                .filter(ws -> keywordType.equals("content") ? ws.getContent().toLowerCase().contains(keyword.toLowerCase()) : ws.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
+                .sorted((a, b) -> b.getId() - a.getId())
+                .toList();
+    }
+
     public WiseSaying getWiseSayingById(int id) {
         return repository.getWiseSayings().stream()
                 .filter(ws -> ws.getId() == id)

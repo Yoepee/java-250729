@@ -29,7 +29,7 @@ public class App {
     private static void processCommand(String cmd, SystemController systemController, WiseSayingController wiseSayingController, Scanner sc) {
         switch (cmd) {
             case "등록" -> wiseSayingController.add(sc);
-            case "목록" -> wiseSayingController.showAll();
+            case "목록" -> processSearchCommand(systemController, wiseSayingController);
             case "빌드" -> wiseSayingController.build();
             case "삭제", "수정" -> processModifyCommand(cmd, systemController, wiseSayingController, sc);
             default -> System.out.println("알 수 없는 명령입니다.");
@@ -44,6 +44,17 @@ public class App {
             wiseSayingController.update(id, sc);
         } else {
             wiseSayingController.remove(id);
+        }
+    }
+
+    private static void processSearchCommand(SystemController systemController, WiseSayingController wiseSayingController) {
+        String keywordType = systemController.getKeywordType();
+        String keyword = systemController.getKeyword();
+
+        if (keywordType != null && keyword != null) {
+            wiseSayingController.showByKeyword(keywordType, keyword);
+        }else {
+            wiseSayingController.showAll();
         }
     }
 }

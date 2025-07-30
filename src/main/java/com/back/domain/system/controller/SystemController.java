@@ -67,4 +67,29 @@ public class SystemController {
             return -1;
         }
     }
+
+    public String getKeywordType() {
+        if (queryParams == null || !queryParams.containsKey("keywordType")) {
+            return null;
+        }
+
+        String keywordType = queryParams.get("keywordType").trim();
+        if (keywordType.equals("명언")) return "content";
+        else if (keywordType.equals("작가")) return "author";
+        else if (!keywordType.equals("content") && !keywordType.equals("author")) {
+            System.out.println("keywordType은 'content' 또는 'author' 만 가능합니다.");
+            return null;
+        }
+
+        return keywordType;
+    }
+
+    public String getKeyword() {
+        if (queryParams == null || !queryParams.containsKey("keyword")) {
+            return null;
+        }
+
+        String keyword = queryParams.get("keyword").trim();
+        return keyword;
+    }
 }

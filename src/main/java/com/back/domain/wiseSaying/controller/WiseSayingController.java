@@ -39,6 +39,22 @@ public class WiseSayingController {
         }
     }
 
+    public void showByKeyword(String keywordType, String keyword) {
+        if (service.isEmpty()) {
+            System.out.println("등록된 명언이 없습니다.");
+            return;
+        }
+        System.out.println("-------------------------");
+        System.out.println("검색 타입 : %s".formatted(keywordType));
+        System.out.println("검색어 : %s".formatted(keyword));
+        System.out.println("-------------------------");
+        System.out.println("번호 / 작가 / 명언");
+        System.out.println("-------------------------");
+        for (WiseSaying wiseSaying : service.getSortedWiseSayingsByKeyword(keywordType, keyword)) {
+            System.out.println("%d / %s / %s".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor()));
+        }
+    }
+
     public void remove(int id) {
         WiseSaying ws = service.getWiseSayingById(id);
         if (ws == null) {

@@ -22,6 +22,7 @@ public class Main {
             }
             else if (cmd.equals("등록")) manager.add(sc);
             else if (cmd.equals("목록")) manager.showAll();
+            else if (cmd.equals("빌드")) manager.build();
             else if (cmd.contains("삭제") || cmd.contains("수정")) {
                 String startCmd = cmd.substring(0, 2).trim();
                 if (!startCmd.equals("삭제") && !startCmd.equals("수정")) continue;
@@ -194,6 +195,37 @@ class WiseSayingsManager {
                 System.out.println("lastId 로드 중 오류가 발생했습니다: " + e.getMessage());
             }
         }
+    }
+
+    public void build() {
+        String dirPath = "./db";
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        File file = new File(dirPath,  "data.json");
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("[\n");
+            for (WiseSaying wiseSaying : wiseSayings) {
+                writer.write("  {\n");
+                writer.write("    \"id\": " + wiseSaying.getId() + ",\n");
+                writer.write("    \"content\": \"" + wiseSaying.getContent() + "\",\n");
+                writer.write("    \"author\": \"" + wiseSaying.getAuthor() + "\"\n");
+                writer.write("  }");
+
+                if (wiseSaying != wiseSayings.get(wiseSayings.size() - 1)) {
+                    writer.write(",\n");
+                } else {
+                    writer.write("\n");
+                }
+            }
+            writer.write("]");
+        } catch (Exception e) {
+            System.out.println("파일 저장 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        System.out.println("data.json 파일의 내용이 갱신되었습니다.");
     }
 }
 

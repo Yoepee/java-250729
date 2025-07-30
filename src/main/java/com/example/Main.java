@@ -16,10 +16,12 @@ public class Main {
             if (cmd.equals("종료")) break;
             else if (cmd.equals("등록")) manager.add(sc);
             else if (cmd.equals("목록")) manager.showAll();
-            else if (cmd.contains("삭제")) {
+            else if (cmd.contains("삭제") || cmd.contains("수정")) {
                 try{
                     int idToProcess = Integer.parseInt(getQueryParamsByCommand(cmd).get("id"));
-                    manager.remove(idToProcess);
+
+                    if(cmd.contains("수정"))  manager.update(idToProcess, sc);
+                    else if (cmd.contains("삭제")) manager.remove(idToProcess);
                 } catch (NumberFormatException e) {
                     System.out.println("잘못된 id 형식입니다. 숫자를 입력해주세요.");
                 }
@@ -96,6 +98,25 @@ class WiseSayingsManager {
 
         wiseSayings.remove(ws);
         System.out.println("%d번 명언이 삭제되었습니다.".formatted(id));
+    }
+
+    public void update(int id, Scanner sc){
+        WiseSaying ws = getWiseSayingById(id);
+        if (ws == null) {
+            System.out.println("%d번 명언은 존재하지 않습니다.".formatted(id));
+            return;
+        }
+
+        System.out.println("명언(기존) : %s".formatted(ws.getContent()));
+        System.out.print("명언: ");
+        String content = sc.nextLine();
+        System.out.println("작가(기존) : %s".formatted(ws.getAuthor()));
+        System.out.print("작가: ");
+        String author = sc.nextLine();
+
+        ws.setContent(content);
+        ws.setAuthor(author);
+        System.out.println("%d번 명언이 수정되었습니다.".formatted(id));
     }
 }
 

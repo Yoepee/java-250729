@@ -7,7 +7,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        Proccessor pc = new Proccessor();
+        WiseManager wm = new WiseManager();
         System.out.println("== 명언 앱 ==");
         Scanner sc = new Scanner(System.in);
 
@@ -16,20 +16,20 @@ public class Main {
             String cmd = sc.nextLine().trim();
 
             if(cmd.equals("종료")) {
-                pc.exit();
+                wm.exit();
                 break;
             } else if(cmd.equals("등록")) {
-                pc.addWise(sc);
+                wm.addWise(sc);
             }else if(cmd.equals("목록")){
-                pc.showWiseList();
+                wm.showWiseList();
             }else if(cmd.contains("삭제") || cmd.contains("수정")){
                 Map<String, String> queryMap = makeQueryMap(cmd);
 
                 try {
                     int idToProcess = Integer.parseInt(queryMap.get("id"));
 
-                    if (cmd.contains("삭제")) pc.removeWise(idToProcess);
-                    else if(cmd.contains("수정")) pc.updateWise(sc, idToProcess);
+                    if (cmd.contains("삭제")) wm.removeWise(idToProcess);
+                    else if(cmd.contains("수정")) wm.updateWise(sc, idToProcess);
                 } catch (NumberFormatException e) {
                     System.out.println("잘못된 입력입니다. 숫자를 입력해주세요.");
                 }
@@ -39,7 +39,7 @@ public class Main {
         File dir = new File("db.wiseSaying");
         if (!dir.exists()) dir.mkdirs();
 
-        for(Wise wise : pc.getWiseList()) {
+        for(Wise wise : wm.getWiseList()) {
             String jsonString = "{\"id\":"+wise.getId()+", \"content\":\""+wise.getContent()+"\", \"author\":\""+wise.getAuthor()+"\"}";
             File file = new File(dir, "%d.json".formatted(wise.getId()));
             try(FileWriter writer = new FileWriter(file)){
@@ -71,13 +71,9 @@ public class Main {
     }
 }
 
-class Proccessor {
+class WiseManager {
     static int id = 1;
     List<Wise> wiseList = new ArrayList<>();
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     private Wise getWiseById(int id) {
         return wiseList.stream()

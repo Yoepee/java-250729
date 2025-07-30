@@ -31,6 +31,7 @@ class WiseSayingsManager {
         String author = sc.nextLine();
 
         wiseSayings.add(new WiseSaying(id, content, author));
+        System.out.println("%d번 명언이 등록되었습니다.".formatted(id));
     }
 }
 

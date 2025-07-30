@@ -3,5 +3,15 @@
     "id": 1,
     "content": "바꾸기",
     "author": "테스트"
+  },
+  {
+    "id": 3,
+    "content": "한번더",
+    "author": "한다"
+  },
+  {
+    "id": 4,
+    "content": "테스트",
+    "author": "한다"
   }
 ]

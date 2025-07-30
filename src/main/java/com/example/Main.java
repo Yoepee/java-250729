@@ -13,7 +13,8 @@ public class Main {
             System.out.print("명령) ");
             String cmd = sc.nextLine();
             if (cmd.equals("종료")) break;
-            if (cmd.equals("등록")) manager.add(sc);
+            else if (cmd.equals("등록")) manager.add(sc);
+            else if (cmd.equals("목록")) manager.showAll();
         }
 
         sc.close();
@@ -24,6 +25,10 @@ class WiseSayingsManager {
     private static int id = 1;
     private List<WiseSaying> wiseSayings = new ArrayList<>();
 
+    public List<WiseSaying> getWiseSayings() {
+        return wiseSayings.stream().sorted((a,b)->b.getId()-a.getId()).toList();
+    }
+
     public void add(Scanner sc) {
         System.out.print("명언 : ");
         String content = sc.nextLine();
@@ -33,6 +38,18 @@ class WiseSayingsManager {
         wiseSayings.add(new WiseSaying(id, content, author));
         System.out.println("%d번 명언이 등록되었습니다.".formatted(id));
         id++;
+    }
+
+    public void showAll() {
+        if (wiseSayings.isEmpty()) {
+            System.out.println("등록된 명언이 없습니다.");
+            return;
+        }
+        System.out.println("번호 / 작가 / 명언");
+        System.out.println("-------------------------");
+        for (WiseSaying wiseSaying : getWiseSayings()) {
+            System.out.println("%d / %s /%s".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor()));
+        }
     }
 }
 

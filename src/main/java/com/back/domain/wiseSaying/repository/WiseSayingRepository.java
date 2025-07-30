@@ -17,8 +17,37 @@ public class WiseSayingRepository {
         return lastId;
     }
 
-    public List<WiseSaying> getWiseSayings() {
-        return wiseSayings;
+    public WiseSaying getWiseSayingById(int id) {
+        return wiseSayings.stream()
+                .filter(ws -> ws.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<WiseSaying> getWiseSayings(int offset, int limit) {
+        return wiseSayings.stream()
+                .sorted((a, b) -> b.getId() - a.getId())
+                .skip(offset)
+                .limit(limit)
+                .toList();
+    }
+    public int getWiseSayingCount() {
+        return wiseSayings.size();
+    }
+
+    public List<WiseSaying> getWiseSayingsByKeyword(int offset, int limit, String keywordType, String keyword) {
+        return wiseSayings.stream()
+                .filter(ws -> keywordType.equals("content") ? ws.getContent().toLowerCase().contains(keyword.toLowerCase()) : ws.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
+                .sorted((a, b) -> b.getId() - a.getId())
+                .skip(offset)
+                .limit(limit)
+                .toList();
+    }
+
+    public int getWiseSayingCountByKeyword(String keywordType, String keyword) {
+        return (int)wiseSayings.stream()
+                .filter(ws -> keywordType.equals("content") ? ws.getContent().toLowerCase().contains(keyword.toLowerCase()) : ws.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
+                .count();
     }
 
     public void add(WiseSaying ws) {

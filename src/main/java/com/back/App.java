@@ -8,6 +8,7 @@ import com.back.domain.wiseSaying.service.WiseSayingService;
 import java.util.Scanner;
 
 public class App {
+    static int PAGE_SIZE = 5;
     Scanner sc = new Scanner(System.in);
     SystemController systemController = new SystemController(sc);
     WiseSayingController wiseSayingController = new WiseSayingController(new WiseSayingService(new WiseSayingRepository()));
@@ -48,13 +49,14 @@ public class App {
     }
 
     private static void processSearchCommand(SystemController systemController, WiseSayingController wiseSayingController) {
+        int page = systemController.getPage();
         String keywordType = systemController.getKeywordType();
         String keyword = systemController.getKeyword();
 
         if (keywordType != null && keyword != null) {
-            wiseSayingController.showByKeyword(keywordType, keyword);
+            wiseSayingController.showByKeyword(PAGE_SIZE,page, keywordType, keyword);
         }else {
-            wiseSayingController.showAll();
+            wiseSayingController.showAll(PAGE_SIZE,page);
         }
     }
 }

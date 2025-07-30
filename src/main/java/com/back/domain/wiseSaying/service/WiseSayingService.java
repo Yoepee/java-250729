@@ -13,34 +13,38 @@ public class WiseSayingService {
         this.repository = repository;
     }
 
-    public List<WiseSaying> getSortedWiseSayings() {
-        return repository.getWiseSayings().stream().sorted((a, b) -> b.getId() - a.getId()).toList();
+    public int getWiseSayingCount() {
+        return repository.getWiseSayingCount();
     }
 
-    public List<WiseSaying> getSortedWiseSayingsByKeyword(String keywordType, String keyword) {
-        return repository.getWiseSayings().stream()
-                .filter(ws -> keywordType.equals("content") ? ws.getContent().toLowerCase().contains(keyword.toLowerCase()) : ws.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
-                .sorted((a, b) -> b.getId() - a.getId())
-                .toList();
+    public List<WiseSaying> getSortedWiseSayings(int offset, int limit) {
+        return repository.getWiseSayings(offset, limit);
+    }
+
+    public List<WiseSaying> getSortedWiseSayingsByKeyword(int offset, int limit, String keywordType, String keyword) {
+        return repository.getWiseSayingsByKeyword(offset, limit, keywordType, keyword);
+    }
+
+    public int getTotalPages(int pageSize) {
+        int count = repository.getWiseSayingCount();
+        return (int) Math.ceil((double) count / pageSize);
+    }
+
+    public int getTotalPagesByKeyword(int pageSize, String keywordType, String keyword) {
+        int count = repository.getWiseSayingCountByKeyword(keywordType, keyword);
+        return (int) Math.ceil((double) count / pageSize);
     }
 
     public WiseSaying getWiseSayingById(int id) {
-        return repository.getWiseSayings().stream()
-                .filter(ws -> ws.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
-
-    public boolean isEmpty() {
-        return repository.getWiseSayings().isEmpty();
+        return repository.getWiseSayingById(id);
     }
 
     public WiseSaying addWiseSaying(String content, String author) throws IOException {
         int lastId = repository.getLastId();
         WiseSaying wiseSaying = new WiseSaying(lastId, content, author);
+        repository.add(wiseSaying);
         repository.saveWiseSayings(wiseSaying);
         repository.saveLastId();
-        repository.add(wiseSaying);
         return wiseSaying;
     }
 

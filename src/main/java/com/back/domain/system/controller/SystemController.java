@@ -92,4 +92,16 @@ public class SystemController {
         String keyword = queryParams.get("keyword").trim();
         return keyword;
     }
+
+    public int getPage() {
+        if (queryParams == null || !queryParams.containsKey("page")) {
+            return 1; // 기본 페이지는 1
+        }
+
+        try {
+            return Integer.parseInt(queryParams.get("page"));
+        } catch (NumberFormatException e) {
+            return 1; // 오류 발생 시 기본 페이지로 설정
+        }
+    }
 }

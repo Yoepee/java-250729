@@ -1,6 +1,7 @@
 package com.example;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,15 +16,48 @@ public class Main {
             if (cmd.equals("종료")) break;
             else if (cmd.equals("등록")) manager.add(sc);
             else if (cmd.equals("목록")) manager.showAll();
+            else if (cmd.contains("삭제")) {
+                try{
+                    int idToProcess = Integer.parseInt(getQueryParamsByCommand(cmd).get("id"));
+                    manager.remove(idToProcess);
+                } catch (NumberFormatException e) {
+                    System.out.println("잘못된 id 형식입니다. 숫자를 입력해주세요.");
+                }
+            }
         }
 
         sc.close();
     }
+
+    public static HashMap<String, String> getQueryParamsByCommand(String cmd) {
+        HashMap<String, String> queryParams = new HashMap<>();
+        int indexOfQuestionMark = cmd.indexOf("?");
+        if (indexOfQuestionMark == -1) return queryParams; // No query parameters found
+
+        String query = cmd.substring(cmd.indexOf("?") + 1);
+        if (query.isEmpty()) return queryParams; // No query parameters found
+
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=");
+            if (keyValue.length == 2) {
+                queryParams.put(keyValue[0], keyValue[1]);
+            }
+        }
+        return queryParams;
+    }
 }
 
 class WiseSayingsManager {
-    private static int id = 1;
+    private static int lastId = 1;
     private List<WiseSaying> wiseSayings = new ArrayList<>();
+
+    public WiseSaying getWiseSayingById(int id) {
+        return wiseSayings.stream()
+                .filter(ws -> ws.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
 
     public List<WiseSaying> getWiseSayings() {
         return wiseSayings.stream().sorted((a,b)->b.getId()-a.getId()).toList();
@@ -35,9 +69,9 @@ class WiseSayingsManager {
         System.out.print("작가 : ");
         String author = sc.nextLine();
 
-        wiseSayings.add(new WiseSaying(id, content, author));
-        System.out.println("%d번 명언이 등록되었습니다.".formatted(id));
-        id++;
+        wiseSayings.add(new WiseSaying(lastId, content, author));
+        System.out.println("%d번 명언이 등록되었습니다.".formatted(lastId));
+        lastId++;
     }
 
     public void showAll() {
@@ -50,6 +84,13 @@ class WiseSayingsManager {
         for (WiseSaying wiseSaying : getWiseSayings()) {
             System.out.println("%d / %s /%s".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor()));
         }
+    }
+
+    public void remove(int id) {
+        WiseSaying ws = getWiseSayingById(id);
+
+        wiseSayings.remove(ws);
+        System.out.println("%d번 명언이 삭제되었습니다.".formatted(id));
     }
 }
 

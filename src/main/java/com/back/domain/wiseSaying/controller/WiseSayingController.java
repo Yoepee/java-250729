@@ -9,64 +9,62 @@ import java.util.Scanner;
 
 public class WiseSayingController {
     private final WiseSayingService service;
+    private final Scanner sc;
 
-    public WiseSayingController(WiseSayingService service) {
+    public WiseSayingController(WiseSayingService service, Scanner sc) {
         this.service = service;
+        this.sc = sc;
     }
 
-    public void add(Scanner sc) {
+    public void add() {
         System.out.print("명언 : ");
         String content = sc.nextLine();
         System.out.print("작가 : ");
         String author = sc.nextLine();
+
         try {
             WiseSaying ws = service.addWiseSaying(content, author);
             int id = ws.getId();
             System.out.println("%d번 명언이 등록되었습니다.".formatted(id));
         } catch (IOException e) {
-            System.out.println("⚠파일 저장 중 오류가 발생했습니다: " + e.getMessage());
+            System.out.println("파일 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 
-    public void showAll(int pageSize, int page) {
-        if (service.getWiseSayingCount() == 0) {
+    public void showList(int pageSize, int page, String keywordType, String keyword) {
+        if (service.getWiseSayingCount(null, null) == 0) {
             System.out.println("등록된 명언이 없습니다.");
             return;
         }
-        int totalPages = service.getTotalPages(pageSize);
-        if (page < 1 || page > totalPages) {
-            System.out.println("유효하지 않은 페이지입니다. (1 ~ %d)".formatted(totalPages));
-            return;
-        }
-        System.out.println("번호 / 작가 / 명언");
-        System.out.println("-------------------------");
-        int offset = (page - 1) * pageSize;
-        List<WiseSaying> sortedWiseSayings= service.getSortedWiseSayings(offset, pageSize);
-        showList(sortedWiseSayings, totalPages, page);
-    }
 
-    public void showByKeyword(int pageSize, int page, String keywordType, String keyword) {
-        if (service.getWiseSayingCount() == 0) {
-            System.out.println("등록된 명언이 없습니다.");
+        boolean isSearch = keywordType != null && keyword != null;
+
+        int totalPages = service.getTotalPages(pageSize, keywordType, keyword);
+        if (totalPages == 0) {
+            System.out.println("검색 결과가 없습니다.");
             return;
         }
-        int totalPages = service.getTotalPagesByKeyword(pageSize, keywordType, keyword);
+
         if (page < 1 || page > totalPages) {
             System.out.println("유효하지 않은 페이지입니다. (1 ~ %d)".formatted(totalPages));
             return;
         }
 
-        System.out.println("-------------------------");
-        System.out.println("검색 타입 : %s".formatted(keywordType));
-        System.out.println("검색어 : %s".formatted(keyword));
-        System.out.println("-------------------------");
+        if (isSearch) {
+            System.out.println("-------------------------");
+            System.out.println("검색 타입 : %s".formatted(keywordType));
+            System.out.println("검색어 : %s".formatted(keyword));
+            System.out.println("-------------------------");
+        }
+
+        int offset = (page - 1) * pageSize;
+        List<WiseSaying> wiseSayings = service.getWiseSayings(offset, pageSize, keywordType, keyword);
+        printList(wiseSayings, totalPages, page);
+    }
+
+    public void printList(List<WiseSaying> wiseSayings, int totalPages, int page) {
         System.out.println("번호 / 작가 / 명언");
         System.out.println("-------------------------");
-        int offset = (page - 1) * pageSize;
-        List<WiseSaying> sortedWiseSayings= service.getSortedWiseSayingsByKeyword(offset, pageSize, keywordType, keyword);
-        showList(sortedWiseSayings, totalPages, page);
-    }
-    public void showList(List<WiseSaying> wiseSayings, int totalPages, int page) {
         for (WiseSaying wiseSaying : wiseSayings) {
             System.out.println("%d / %s / %s".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor()));
         }
@@ -99,7 +97,7 @@ public class WiseSayingController {
         else System.out.println("파일 삭제 중 오류가 발생했습니다.");
     }
 
-    public void update(int id, Scanner sc) {
+    public void update(int id) {
         WiseSaying ws = service.getWiseSayingById(id);
         if (ws == null) {
             System.out.println("%d번 명언은 존재하지 않습니다.".formatted(id));
@@ -117,7 +115,7 @@ public class WiseSayingController {
             String response = service.update(ws, content, author);
             if (response.equals("success")) System.out.println("%d번 명언이 수정되었습니다.".formatted(id));
         } catch (IOException e) {
-            System.out.println("⚠파일 저장 중 오류가 발생했습니다: " + e.getMessage());
+            System.out.println("파일 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 

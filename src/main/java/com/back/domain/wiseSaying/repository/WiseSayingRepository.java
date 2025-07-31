@@ -12,10 +12,8 @@ import java.util.Scanner;
 public class WiseSayingRepository {
     private static int lastId = 1;
     private List<WiseSaying> wiseSayings = new ArrayList<>();
-
-    public int getLastId() {
-        return lastId;
-    }
+    private static final String FILE_DIR_PATH = "./db/wiseSaying";
+    private static final String BUILD_DIR_PATH = "./db";
 
     public WiseSaying getWiseSayingById(int id) {
         return wiseSayings.stream()
@@ -24,35 +22,39 @@ public class WiseSayingRepository {
                 .orElse(null);
     }
 
-    public List<WiseSaying> getWiseSayings(int offset, int limit) {
-        return wiseSayings.stream()
-                .sorted((a, b) -> b.getId() - a.getId())
-                .skip(offset)
-                .limit(limit)
-                .toList();
-    }
-    public int getWiseSayingCount() {
-        return wiseSayings.size();
-    }
+    public List<WiseSaying> getWiseSayings(int offset, int limit, String keywordType, String keyword) {
+        boolean isSearch = keywordType != null && keyword != null;
 
-    public List<WiseSaying> getWiseSayingsByKeyword(int offset, int limit, String keywordType, String keyword) {
         return wiseSayings.stream()
-                .filter(ws -> keywordType.equals("content") ? ws.getContent().toLowerCase().contains(keyword.toLowerCase()) : ws.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
+                .filter(ws -> {
+                    if (!isSearch) return true;
+                    String field = keywordType.equals("content") ? ws.getContent() : ws.getAuthor();
+                    return field.toLowerCase().contains(keyword.toLowerCase());
+                })
                 .sorted((a, b) -> b.getId() - a.getId())
                 .skip(offset)
                 .limit(limit)
                 .toList();
     }
 
-    public int getWiseSayingCountByKeyword(String keywordType, String keyword) {
-        return (int)wiseSayings.stream()
-                .filter(ws -> keywordType.equals("content") ? ws.getContent().toLowerCase().contains(keyword.toLowerCase()) : ws.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
+    public int getWiseSayingCount(String keywordType, String keyword) {
+        boolean isSearch = keywordType != null && keyword != null;
+
+        return (int) wiseSayings.stream()
+                .filter(ws -> {
+                    if (!isSearch) return true;
+                    String field = keywordType.equals("content") ? ws.getContent() : ws.getAuthor();
+                    return field.toLowerCase().contains(keyword.toLowerCase());
+                })
                 .count();
+    }
+
+    public int getNextId() {
+        return lastId++;
     }
 
     public void add(WiseSaying ws) {
         wiseSayings.add(ws);
-        lastId++;
     }
 
     public void remove(WiseSaying ws) {
@@ -81,24 +83,29 @@ public class WiseSayingRepository {
         return file.delete(); // 삭제 성공 여부 반환
     }
 
+    private String getWiseSayingToJsonString(WiseSaying ws) {
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("{\n");
+        jsonBuilder.append("  \"id\": ").append(ws.getId()).append(",\n");
+        jsonBuilder.append("  \"content\": \"").append(ws.getContent().replace("\"", "\\\"")).append("\",\n");
+        jsonBuilder.append("  \"author\": \"").append(ws.getAuthor().replace("\"", "\\\"")).append("\"\n");
+        jsonBuilder.append("}");
+
+        return jsonBuilder.toString();
+    }
+
     public void saveWiseSayings(WiseSaying ws) throws IOException {
-        String dirPath = "./db/wiseSaying";
-        getDir(dirPath);
-        File file = new File(dirPath, ws.getId() + ".json");
+        getDir(FILE_DIR_PATH);
+        File file = new File(FILE_DIR_PATH, ws.getId() + ".json");
 
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("{\n");
-            writer.write("  \"id\": " + ws.getId() + ",\n");
-            writer.write("  \"content\": \"" + ws.getContent() + "\",\n");
-            writer.write("  \"author\": \"" + ws.getAuthor() + "\"\n");
-            writer.write("}");
+            writer.write(getWiseSayingToJsonString(ws));
         }
     }
 
     public void saveLastId() throws IOException {
-        String dirPath = "./db/wiseSaying";
-        getDir(dirPath);
-        File lastIdfile = new File(dirPath, "lastId.txt");
+        getDir(FILE_DIR_PATH);
+        File lastIdfile = new File(FILE_DIR_PATH, "lastId.txt");
 
         try (FileWriter writer = new FileWriter(lastIdfile)) {
             writer.write(String.valueOf(lastId));
@@ -106,32 +113,28 @@ public class WiseSayingRepository {
     }
 
     public void build() throws IOException {
-        String dirPath = "./db";
-        getDir(dirPath);
+        getDir(BUILD_DIR_PATH);
 
-        File file = new File(dirPath, "data.json");
+        File file = new File(BUILD_DIR_PATH, "data.json");
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("[\n");
+            StringBuilder content = new StringBuilder();
+            content.append("[\n");
             for (WiseSaying wiseSaying : wiseSayings) {
-                writer.write("  {\n");
-                writer.write("    \"id\": " + wiseSaying.getId() + ",\n");
-                writer.write("    \"content\": \"" + wiseSaying.getContent() + "\",\n");
-                writer.write("    \"author\": \"" + wiseSaying.getAuthor() + "\"\n");
-                writer.write("  }");
+                content.append("  ").append(getWiseSayingToJsonString(wiseSaying));
 
                 if (wiseSaying != wiseSayings.get(wiseSayings.size() - 1)) {
-                    writer.write(",\n");
+                    content.append(",\n");
                 } else {
-                    writer.write("\n");
+                    content.append("\n");
                 }
             }
-            writer.write("]");
+            content.append("]");
+            writer.write(content.toString());
         }
     }
 
     public void loadWiseSayings() throws IOException {
-        String dirPath = "./db/wiseSaying";
-        File dir = getDir(dirPath);
+        File dir = getDir(FILE_DIR_PATH);
 
         File[] files = dir.listFiles((d, name) -> name.endsWith(".json"));
         if (files != null) {
@@ -155,10 +158,9 @@ public class WiseSayingRepository {
     }
 
     public void loadLastId() throws IOException {
-        String dirPath = "./db/wiseSaying";
-        getDir(dirPath);
+        getDir(FILE_DIR_PATH);
 
-        File lastIdfile = new File(dirPath, "lastId.txt");
+        File lastIdfile = new File(FILE_DIR_PATH, "lastId.txt");
         if (lastIdfile.exists()) {
             try (Scanner scanner = new Scanner(lastIdfile)) {
                 if (scanner.hasNextLine()) {

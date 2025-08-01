@@ -9,8 +9,8 @@ import java.util.List;
 public class WiseSayingService {
     private final WiseSayingRepository repository;
 
-    public WiseSayingService(WiseSayingRepository repository) {
-        this.repository = repository;
+    public WiseSayingService() {
+        this.repository = new WiseSayingRepository();
     }
 
     public int getWiseSayingCount(String keywordType, String keyword) {

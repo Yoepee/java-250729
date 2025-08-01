@@ -11,16 +11,16 @@ public class WiseSayingController {
     private final WiseSayingService service;
     private final Scanner sc;
 
-    public WiseSayingController(WiseSayingService service, Scanner sc) {
-        this.service = service;
+    public WiseSayingController(Scanner sc) {
+        this.service = new WiseSayingService();
         this.sc = sc;
     }
 
     public void add() {
         System.out.print("명언 : ");
-        String content = sc.nextLine();
+        String content = sc.nextLine().trim();
         System.out.print("작가 : ");
-        String author = sc.nextLine();
+        String author = sc.nextLine().trim();
 
         try {
             WiseSaying ws = service.addWiseSaying(content, author);
@@ -63,25 +63,19 @@ public class WiseSayingController {
     }
 
     public void printList(List<WiseSaying> wiseSayings, int totalPages, int page) {
-        System.out.println("번호 / 작가 / 명언");
-        System.out.println("-------------------------");
+        StringBuilder pageBuilder = new StringBuilder();
+        pageBuilder.append("번호 / 작가 / 명언\n");
+        pageBuilder.append("-------------------------\n");
         for (WiseSaying wiseSaying : wiseSayings) {
-            System.out.println("%d / %s / %s".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor()));
+            pageBuilder.append("%d / %s / %s\n".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor()));
         }
-        System.out.println("-------------------------");
-        System.out.print("페이지 : ");
+        pageBuilder.append("-------------------------\n");
+        pageBuilder.append("페이지 : ");
         for (int i = 1; i <= totalPages; i++) {
-            if (i == page) {
-                System.out.print("[%d] ".formatted(i));
-            } else {
-                System.out.print("%d ".formatted(i));
-            }
-
-            if (i != totalPages) {
-                System.out.print("/ ");
-            }
+            pageBuilder.append(i==page ? "[%d] ".formatted(i) : "%d ".formatted(i))
+                    .append(i == totalPages ? "" : "/ ");
         }
-        System.out.println();
+        System.out.println(pageBuilder);
     }
 
     public void remove(int id) {

@@ -2,8 +2,6 @@ package com.back;
 
 import com.back.domain.system.controller.SystemController;
 import com.back.domain.wiseSaying.controller.WiseSayingController;
-import com.back.domain.wiseSaying.repository.WiseSayingRepository;
-import com.back.domain.wiseSaying.service.WiseSayingService;
 
 import java.util.Map;
 import java.util.Scanner;
@@ -13,7 +11,7 @@ public class App {
     static final int PAGE_SIZE = 5;
     Scanner sc = new Scanner(System.in);
     SystemController systemController = new SystemController(sc);
-    WiseSayingController wiseSayingController = new WiseSayingController(new WiseSayingService(new WiseSayingRepository()), sc);
+    WiseSayingController wiseSayingController = new WiseSayingController(sc);
 
     public void run() {
         systemController.start();
@@ -40,7 +38,7 @@ public class App {
     }
 
     private void processModifyCommand(String cmd) {
-        int id = systemController.getRq().getParamAsInt("page", -1);
+        int id = systemController.getRq().getParamAsInt("id", -1);
         if (id == -1) {
             System.out.println("유효하지 않은 id 입니다.");
             return;

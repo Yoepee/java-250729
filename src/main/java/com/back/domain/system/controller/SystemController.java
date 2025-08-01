@@ -8,12 +8,12 @@ public class SystemController {
     Scanner sc;
     Rq rq;
 
-    public Rq getRq() {
-        return rq;
-    }
-
     public SystemController(Scanner sc) {
         this.sc = sc;
+    }
+
+    public Rq getRq() {
+        return rq;
     }
 
     public void start() {

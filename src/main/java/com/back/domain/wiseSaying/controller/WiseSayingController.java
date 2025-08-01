@@ -82,7 +82,6 @@ public class WiseSayingController {
             }
         }
         System.out.println();
-
     }
 
     public void remove(int id) {

@@ -1,14 +1,15 @@
 package com.back;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Rq {
     private final String actionName;
     private final Map<String, String> paramsMap;
 
     public Rq(String cmd) {
-        paramsMap = new HashMap<>();
+        Map<String, String> paramsMap1;
 
         String[] cmdBits = cmd.split("\\?", 2);
         actionName = cmdBits[0];
@@ -16,17 +17,10 @@ public class Rq {
 
         String[] queryStringBits = queryString.split("&");
 
-        for (String queryParam : queryStringBits) {
-            String[] queryParamBits = queryParam.split("=", 2);
-            String key = queryParamBits[0].trim();
-            String value = queryParamBits.length > 1 ? queryParamBits[1].trim() : "";
-
-            if (value.isEmpty()) {
-                continue;
-            }
-
-            paramsMap.put(key, value);
-        }
+        paramsMap = Arrays.stream(queryStringBits)
+                .map(e -> e.split("=", 2))
+                .filter(e->e.length ==2 && !e[1].isEmpty())
+                .collect(Collectors.toMap(e -> e[0].trim(), e->e[1].trim()));
     }
 
     public String getActionName() {

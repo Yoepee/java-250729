@@ -150,8 +150,6 @@ public class WiseSayingRepository {
                     String author = json.split("\"author\": \"")[1].split("\"")[0];
                     add(new WiseSaying(id, contentText, author));
                     lastId = Math.max(lastId, id + 1);
-                } catch (Exception e) {
-                    System.out.println("파일 로드 중 오류가 발생했습니다: " + e.getMessage());
                 }
             }
         }
@@ -166,8 +164,6 @@ public class WiseSayingRepository {
                 if (scanner.hasNextLine()) {
                     lastId = Integer.parseInt(scanner.nextLine());
                 }
-            } catch (Exception e) {
-                System.out.println("lastId 로드 중 오류가 발생했습니다: " + e.getMessage());
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.back.domain.system.controller;
 
+import com.back.AppContext;
 import com.back.Rq;
 
 import java.util.Scanner;
@@ -8,8 +9,8 @@ public class SystemController {
     Scanner sc;
     Rq rq;
 
-    public SystemController(Scanner sc) {
-        this.sc = sc;
+    public SystemController() {
+        this.sc = AppContext.sc;
     }
 
     public Rq getRq() {

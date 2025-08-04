@@ -4,20 +4,18 @@ import com.back.domain.system.controller.SystemController;
 import com.back.domain.wiseSaying.controller.WiseSayingController;
 
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 
 public class App {
     static final int PAGE_SIZE = 5;
     static Set<String> VALID_KEYWORD_TYPE = Set.of("content", "author");
-    Scanner sc = new Scanner(System.in);
     SystemController systemController;
     WiseSayingController wiseSayingController;
 
     App() {
         // 생성자에서 초기화 작업을 수행
-        systemController = new SystemController(sc);
-        wiseSayingController = new WiseSayingController(sc);
+        systemController = AppContext.systemController;
+        wiseSayingController = AppContext.wiseSayingController;
     }
 
     public void run() {

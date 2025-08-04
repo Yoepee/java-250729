@@ -1,5 +1,6 @@
 package com.back.domain.wiseSaying.service;
 
+import com.back.AppContext;
 import com.back.domain.wiseSaying.entity.WiseSaying;
 import com.back.domain.wiseSaying.repository.WiseSayingRepository;
 
@@ -10,7 +11,7 @@ public class WiseSayingService {
     private final WiseSayingRepository repository;
 
     public WiseSayingService() {
-        this.repository = new WiseSayingRepository();
+        this.repository = AppContext.wiseSayingRepository;
     }
 
     public int getWiseSayingCount(String keywordType, String keyword) {

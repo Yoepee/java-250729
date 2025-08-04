@@ -50,22 +50,20 @@ public class WiseSayingRepository {
                 .count();
     }
 
-    public int getNextId() {
-        return lastId++;
-    }
-
-    public void add(WiseSaying ws) {
-        wiseSayings.add(ws);
-    }
-
     public void remove(WiseSaying ws) {
         wiseSayings.remove(ws);
     }
 
-    public void update(WiseSaying ws, String content, String author, LocalDateTime modifyDate) {
-        ws.setContent(content);
-        ws.setAuthor(author);
-        ws.setModifyDate(modifyDate);
+    public void save(WiseSaying ws) {
+        LocalDateTime now = LocalDateTime.now();
+        if(ws.isNew()) {
+            ws.setId(++lastId);
+            ws.setCreateDate(now);
+            ws.setModifyDate(now);
+            wiseSayings.add(ws);
+        } else {
+            ws.setModifyDate(now);
+        }
     }
 
     private File getDir(String dirPath) {
@@ -145,7 +143,7 @@ public class WiseSayingRepository {
                     int id = Integer.parseInt(json.split("\"id\": ")[1].split(",")[0]);
                     String contentText = json.split("\"content\": \"")[1].split("\"")[0];
                     String author = json.split("\"author\": \"")[1].split("\"")[0];
-                    add(new WiseSaying(id, contentText, author));
+                    save(new WiseSaying(id, contentText, author));
                     lastId = Math.max(lastId, id + 1);
                 }
             }

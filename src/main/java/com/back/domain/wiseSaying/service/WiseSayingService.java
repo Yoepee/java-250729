@@ -4,7 +4,6 @@ import com.back.domain.wiseSaying.entity.WiseSaying;
 import com.back.domain.wiseSaying.repository.WiseSayingRepository;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class WiseSayingService {
@@ -32,15 +31,11 @@ public class WiseSayingService {
     }
 
     public WiseSaying addWiseSaying(String content, String author) throws IOException {
-        int newId = repository.getNextId();
-        WiseSaying wiseSaying = new WiseSaying(newId, content, author);
-        LocalDateTime now = LocalDateTime.now();
-        wiseSaying.setCreateDate(now);
-        wiseSaying.setModifyDate(now);
-        repository.add(wiseSaying);
-        repository.saveWiseSayings(wiseSaying);
+        WiseSaying ws = new WiseSaying(0, content, author);
+        repository.save(ws);
+        repository.saveWiseSayings(ws);
         repository.saveLastId();
-        return wiseSaying;
+        return ws;
     }
 
     public String remove(WiseSaying ws) {
@@ -54,8 +49,9 @@ public class WiseSayingService {
     }
 
     public String update(WiseSaying ws, String content, String author) throws IOException {
-        LocalDateTime now = LocalDateTime.now();
-        repository.update(ws, content, author, now);
+        ws.setContent(content);
+        ws.setAuthor(author);
+        repository.save(ws);
         repository.saveWiseSayings(ws);
         return "success";
     }

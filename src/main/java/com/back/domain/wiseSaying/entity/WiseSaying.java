@@ -1,13 +1,15 @@
 package com.back.domain.wiseSaying.entity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class WiseSaying {
     private String content;
     private String author;
-    private int id;
+    private int id = 0;
     private LocalDateTime createDate;
     private LocalDateTime modifyDate;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public WiseSaying(int id, String content, String author) {
         this.id = id;
@@ -35,6 +37,10 @@ public class WiseSaying {
         return modifyDate;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setContent(String content) {
         this.content = content;
     }
@@ -49,5 +55,16 @@ public class WiseSaying {
 
     public void setModifyDate(LocalDateTime modifyDate) {
         this.modifyDate = modifyDate;
+    }
+
+    public String getCreateDateStr() {
+        return createDate.format(formatter);
+    }
+    public String getModifyDateStr() {
+        return modifyDate.format(formatter);
+    }
+
+    public boolean isNew() {
+        return id == 0;
     }
 }

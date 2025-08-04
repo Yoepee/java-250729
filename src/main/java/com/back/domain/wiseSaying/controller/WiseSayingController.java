@@ -24,8 +24,7 @@ public class WiseSayingController {
 
         try {
             WiseSaying ws = service.addWiseSaying(content, author);
-            int id = ws.getId();
-            System.out.println("%d번 명언이 등록되었습니다.".formatted(id));
+            System.out.println("%d번 명언이 등록되었습니다.".formatted(ws.getId()));
         } catch (IOException e) {
             System.out.println("파일 저장 중 오류가 발생했습니다: " + e.getMessage());
         }
@@ -67,7 +66,7 @@ public class WiseSayingController {
         pageBuilder.append("번호 / 작가 / 명언 / 작성일 / 수정일\n");
         pageBuilder.append("-------------------------\n");
         for (WiseSaying wiseSaying : wiseSayings) {
-            pageBuilder.append("%d / %s / %s / %s / %s\n".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor(), wiseSaying.getCreateDate(), wiseSaying.getModifyDate()));
+            pageBuilder.append("%d / %s / %s / %s / %s\n".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor(), wiseSaying.getCreateDateStr(), wiseSaying.getModifyDateStr()));
         }
         pageBuilder.append("-------------------------\n");
         pageBuilder.append("페이지 : ");

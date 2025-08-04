@@ -109,4 +109,14 @@ public class RqTest {
 
         assertThat(paramValue).isEqualTo("모름");
     }
+
+    @Test
+    @DisplayName("\"등록?성별= \" : rq.getParam(\"성별\", \"모름\")")
+    void t11() {
+        Rq rq = new Rq("등록?성별= ");
+
+        String paramValue = rq.getParam("성별", "모름");
+
+        assertThat(paramValue).isEqualTo("모름");
+    }
 }

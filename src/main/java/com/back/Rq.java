@@ -19,7 +19,7 @@ public class Rq {
 
         paramsMap = Arrays.stream(queryStringBits)
                 .map(e -> e.split("=", 2))
-                .filter(e->e.length ==2 && !e[1].isEmpty())
+                .filter(e->e.length ==2)
                 .collect(Collectors.toMap(e -> e[0].trim(), e->e[1].trim()));
     }
 

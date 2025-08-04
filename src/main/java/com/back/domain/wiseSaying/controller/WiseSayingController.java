@@ -64,10 +64,10 @@ public class WiseSayingController {
 
     public void printList(List<WiseSaying> wiseSayings, int totalPages, int page) {
         StringBuilder pageBuilder = new StringBuilder();
-        pageBuilder.append("번호 / 작가 / 명언\n");
+        pageBuilder.append("번호 / 작가 / 명언 / 작성일 / 수정일\n");
         pageBuilder.append("-------------------------\n");
         for (WiseSaying wiseSaying : wiseSayings) {
-            pageBuilder.append("%d / %s / %s\n".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor()));
+            pageBuilder.append("%d / %s / %s / %s / %s\n".formatted(wiseSaying.getId(), wiseSaying.getContent(), wiseSaying.getAuthor(), wiseSaying.getCreateDate(), wiseSaying.getModifyDate()));
         }
         pageBuilder.append("-------------------------\n");
         pageBuilder.append("페이지 : ");

@@ -9,9 +9,16 @@ import java.util.Set;
 
 public class App {
     static final int PAGE_SIZE = 5;
+    static Set<String> VALID_KEYWORD_TYPE = Set.of("content", "author");
     Scanner sc = new Scanner(System.in);
-    SystemController systemController = new SystemController(sc);
-    WiseSayingController wiseSayingController = new WiseSayingController(sc);
+    SystemController systemController;
+    WiseSayingController wiseSayingController;
+
+    App() {
+        // 생성자에서 초기화 작업을 수행
+        systemController = new SystemController(sc);
+        wiseSayingController = new WiseSayingController(sc);
+    }
 
     public void run() {
         systemController.start();
@@ -57,10 +64,8 @@ public class App {
         String keywordType = systemController.getRq().getParam("keywordType", null);
         String keyword = systemController.getRq().getParam("keyword", null);
 
-        Set<String> validKeywordTypes = Set.of("content", "author");
-
         // keywordType만 있고 keyword가 null이거나, keywordType이 유효하지 않은 경우 처리
-        if (keywordType != null && (!validKeywordTypes.contains(keywordType) || keyword == null)) {
+        if (keywordType != null && (!VALID_KEYWORD_TYPE.contains(keywordType) || keyword == null)) {
             System.out.println("keywordType은 'content' 또는 'author' 만 가능하며, keyword도 함께 입력되어야 합니다.");
             return;
         }

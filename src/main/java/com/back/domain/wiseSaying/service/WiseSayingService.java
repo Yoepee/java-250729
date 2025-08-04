@@ -4,6 +4,7 @@ import com.back.domain.wiseSaying.entity.WiseSaying;
 import com.back.domain.wiseSaying.repository.WiseSayingRepository;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class WiseSayingService {
@@ -33,6 +34,9 @@ public class WiseSayingService {
     public WiseSaying addWiseSaying(String content, String author) throws IOException {
         int newId = repository.getNextId();
         WiseSaying wiseSaying = new WiseSaying(newId, content, author);
+        LocalDateTime now = LocalDateTime.now();
+        wiseSaying.setCreateDate(now);
+        wiseSaying.setModifyDate(now);
         repository.add(wiseSaying);
         repository.saveWiseSayings(wiseSaying);
         repository.saveLastId();
@@ -50,7 +54,8 @@ public class WiseSayingService {
     }
 
     public String update(WiseSaying ws, String content, String author) throws IOException {
-        repository.update(ws, content, author);
+        LocalDateTime now = LocalDateTime.now();
+        repository.update(ws, content, author, now);
         repository.saveWiseSayings(ws);
         return "success";
     }

@@ -5,6 +5,7 @@ import com.back.domain.wiseSaying.entity.WiseSaying;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -61,9 +62,10 @@ public class WiseSayingRepository {
         wiseSayings.remove(ws);
     }
 
-    public void update(WiseSaying ws, String content, String author) {
+    public void update(WiseSaying ws, String content, String author, LocalDateTime modifyDate) {
         ws.setContent(content);
         ws.setAuthor(author);
+        ws.setModifyDate(modifyDate);
     }
 
     private File getDir(String dirPath) {
@@ -83,13 +85,13 @@ public class WiseSayingRepository {
         return file.delete(); // 삭제 성공 여부 반환
     }
 
-    private String getWiseSayingToJsonString(WiseSaying ws) {
+    private String getWiseSayingToJsonString(WiseSaying ws, String startStr) {
         StringBuilder jsonBuilder = new StringBuilder();
-        jsonBuilder.append("{\n");
-        jsonBuilder.append("  \"id\": ").append(ws.getId()).append(",\n");
-        jsonBuilder.append("  \"content\": \"").append(ws.getContent().replace("\"", "\\\"")).append("\",\n");
-        jsonBuilder.append("  \"author\": \"").append(ws.getAuthor().replace("\"", "\\\"")).append("\"\n");
-        jsonBuilder.append("}");
+        jsonBuilder.append(startStr+"{\n");
+        jsonBuilder.append(startStr+"  \"id\": ").append(ws.getId()).append(",\n");
+        jsonBuilder.append(startStr+"  \"content\": \"").append(ws.getContent().replace("\"", "\\\"")).append("\",\n");
+        jsonBuilder.append(startStr+"  \"author\": \"").append(ws.getAuthor().replace("\"", "\\\"")).append("\"\n");
+        jsonBuilder.append(startStr+"}");
 
         return jsonBuilder.toString();
     }
@@ -99,7 +101,7 @@ public class WiseSayingRepository {
         File file = new File(FILE_DIR_PATH, ws.getId() + ".json");
 
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write(getWiseSayingToJsonString(ws));
+            writer.write(getWiseSayingToJsonString(ws, ""));
         }
     }
 
@@ -120,13 +122,8 @@ public class WiseSayingRepository {
             StringBuilder content = new StringBuilder();
             content.append("[\n");
             for (WiseSaying wiseSaying : wiseSayings) {
-                content.append("  ").append(getWiseSayingToJsonString(wiseSaying));
-
-                if (wiseSaying != wiseSayings.get(wiseSayings.size() - 1)) {
-                    content.append(",\n");
-                } else {
-                    content.append("\n");
-                }
+                content.append(getWiseSayingToJsonString(wiseSaying, "  "));
+                content.append(wiseSaying != wiseSayings.get(wiseSayings.size() - 1) ? ",\n" : "\n");
             }
             content.append("]");
             writer.write(content.toString());
@@ -161,9 +158,7 @@ public class WiseSayingRepository {
         File lastIdfile = new File(FILE_DIR_PATH, "lastId.txt");
         if (lastIdfile.exists()) {
             try (Scanner scanner = new Scanner(lastIdfile)) {
-                if (scanner.hasNextLine()) {
-                    lastId = Integer.parseInt(scanner.nextLine());
-                }
+                if (scanner.hasNextLine()) lastId = Integer.parseInt(scanner.nextLine());
             }
         }
     }
